@@ -68,74 +68,7 @@ async function run() {
             res.send({ admin: isAdmin })
         })
 
-        //payment system
-        app.post("/create-payment-intent", verifyJwt, async (req, res) => {
-            const { price } = req.body;
-            const amount = price * 100;
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount: amount,
-                currency: "usd",
-                payment_method_types: ['card']
-            })
-            res.send({ clientSecret: paymentIntent.client_secret })
-        });
-
-
-        app.patch('/booking/:id', verifyJwt, async (req, res) => {
-            const id = req.params.id;
-            const payment = req.body;
-            const filter = { _id: ObjectId(id) };
-            const updatedDoc = {
-                $set: {
-                    paid: true,
-                    transactionId: payment.transactionId,
-                    status: "pending"
-                }
-            }
-
-            const result = await paymentCollection.insertOne(payment);
-            const updatedBooking = await ordersCollection.updateOne(filter, updatedDoc);
-            res.send(updatedBooking);
-        })
-
-
-
-        //get all parts 
-        app.get('/parts', async (req, res) => {
-            const query = {}
-            const cursor = partsCollection.find(query)
-            const result = await cursor.toArray()
-            res.send(result)
-
-        })
-
-        //get specific part with id
-        app.get('/parts/:id', async (req, res) => {
-            const id = req.params.id
-            const query = { _id: ObjectId(id) }
-            const result = await partsCollection.findOne(query);
-            res.send(result)
-        })
-        //get specific order with id
-        app.get('/order/:id', async (req, res) => {
-            const id = req.params.id
-            const query = { _id: ObjectId(id) }
-            const result = await ordersCollection.findOne(query);
-            res.send(result)
-        })
-
-        //post order
-        app.post('/orders', async (req, res) => {
-            const order = req.body;
-            const orderComplete = await ordersCollection.insertOne(order)
-            res.send(orderComplete)
-        })
-
-        //get all orders
-        app.get('/orders', async (req, res) => {
-            const result = await ordersCollection.find().toArray()
-            res.send(result)
-        })
+       
 
         //get only now users orders;
 
