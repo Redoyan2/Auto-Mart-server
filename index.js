@@ -99,22 +99,7 @@ async function run() {
         });
 
 
-        app.patch('/booking/:id', verifyJwt, async (req, res) => {
-            const id = req.params.id;
-            const payment = req.body;
-            const filter = { _id: ObjectId(id) };
-            const updatedDoc = {
-                $set: {
-                    paid: true,
-                    transactionId: payment.transactionId,
-                    status: "pending"
-                }
-            }
-
-            const result = await paymentCollection.insertOne(payment);
-            const updatedBooking = await ordersCollection.updateOne(filter, updatedDoc);
-            res.send(updatedBooking);
-        })
+  
 
 
 
